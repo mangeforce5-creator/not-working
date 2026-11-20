@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💕 For You</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* ========== FLOATING HEARTS BACKGROUND ========== */
+        .hearts-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .floating-heart {
+            position: absolute;
+            bottom: -60px;
+            font-size: 20px;
+            animation: floatUp linear infinite;
+            opacity: 0.3;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.3; }
+            50% { opacity: 0.5; }
+            100% { transform: translateY(-110vh) rotate(360deg) scale(0.5); opacity: 0; }
+        }
+
+        /* ========== SCREEN 1: SECRET CODE ========== */
+        #screen1 {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #f8b4c8 0%, #f7a4b8 30%, #f29db0 60%, #ec8fa3 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        #screen1.hide {
+            opacity: 0;
+            transform: scale(1.1);
+            pointer-events: none;
+        }
+
+        .code-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 50px 60px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15), 0 8px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 480px;
+            width: 90%;
+            animation: cardFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes cardFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .code-card h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.4rem;
+            color: #d63384;
+            margin-bottom: 30px;
+            font-weight: 400;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .code-card input {
+            width: 100%;
+            padding: 16px 24px;
+            font-size: 1.3rem;
+            text-align: center;
+            border: 2.5px solid #d63384;
+            border-radius: 50px;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: 8px;
+            color: #333;
+            background: #fff;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .code-card input:focus {
+            border-color: #e91e8c;
+            box-shadow: 0 0 20px rgba(214, 51, 132, 0.2);
+        }
+
+        .code-card input::placeholder {
+            letter-spacing: 4px;
+            color: #ccc;
+            font-size: 1rem;
+        }
+
+        .enter-btn {
+            background: linear-gradient(135deg, #d63384, #e91e63);
+            color: #fff;
+            border: none;
+            padding: 14px 50px;
+            font-size: 1.1rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(214, 51, 132, 0.4);
+        }
+
+        .enter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(214, 51, 132, 0.5);
+        }
+
+        .enter-btn:active { transform: translateY(0); }
+
+        .error-msg {
+            color: #d63384;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .error-msg.show {
+            opacity: 1;
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        /* ========== SCREEN 2: WELCOME ========== */
+        #screen2 {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #f8c4d4 0%, #f5b0c4 50%, #f2a0b5 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 90;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+        }
+
+        #screen2.show { opacity: 1; pointer-events: auto; }
+        #screen2.hide { opacity: 0; pointer-events: none; }
+
+        .welcome-text {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.5rem;
+            color: #d63384;
+            text-align: center;
+            padding: 0 20px;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .welcome-text.animate { animation: welcomeFadeIn 1.5s ease forwards; }
+
+        @keyframes welcomeFadeIn {
+            0% { opacity: 0; transform: translateY(30px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .sparkle-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 91;
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 6px; height: 6px;
+            background: #fff;
+            border-radius: 50%;
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0; transform: scale(0); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        /* ========== SCREEN 3: LOVE LETTER ========== */
+        #screen3 {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 50%, #f48fb1 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 80;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease;
+        }
+
+        #screen3.show { opacity: 1; pointer-events: auto; }
+
+        .tab-header {
+            position: fixed;
+            top: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 85;
+        }
+
+        .tab-btn {
+            background: linear-gradient(135deg, #e91e63, #d63384);
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 0.95rem;
+            cursor: default;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 15px rgba(214, 51, 132, 0.3);
+        }
+
+        /* ========== ENVELOPE ========== */
+        .envelope-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .click-hint {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.4rem;
+            color: #d63384;
+            animation: pulse 2s ease-in-out infinite;
+            transition: opacity 0.4s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .click-hint.hidden { opacity: 0; pointer-events: none; }
+
+        /* The envelope itself */
+        .envelope {
+            position: relative;
+            width: 340px;
+            height: 220px;
+            cursor: pointer;
+            transition: opacity 0.5s ease, transform 0.3s ease;
+        }
+
+        .envelope:hover { transform: scale(1.03); }
+        .envelope.gone { opacity: 0; pointer-events: none; }
+
+        .env-body {
+            position: absolute;
+            bottom: 0;
+            width: 340px;
+            height: 200px;
+            background: linear-gradient(145deg, #fff5f5, #ffe0e6);
+            border-radius: 0 0 12px 12px;
+            border: 2px solid #f48fb1;
+            border-top: none;
+            z-index: 3;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .env-body::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background:
+                linear-gradient(135deg, transparent 48%, rgba(244,143,177,0.1) 50%, transparent 52%),
+                linear-gradient(-135deg, transparent 48%, rgba(244,143,177,0.1) 50%, transparent 52%);
+            border-radius: 0 0 12px 12px;
+        }
+
+        .env-seal {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            z-index: 6;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            transition: opacity 0.3s;
+        }
+
+        .envelope.flap-open .env-seal { opacity: 0; }
+
+        .env-flap {
+            position: absolute;
+            top: 0; left: 0;
+            width: 0; height: 0;
+            border-left: 170px solid transparent;
+            border-right: 170px solid transparent;
+            border-top: 120px solid #ffcdd2;
+            z-index: 5;
+            transform-origin: top center;
+            transition: transform 0.6s ease;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.05));
+        }
+
+        .envelope.flap-open .env-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        /* Mini paper peek inside envelope */
+        .env-paper-peek {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 160px;
+            background: #fff;
+            border-radius: 6px;
+            z-index: 2;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.7s ease, opacity 0.5s ease;
+        }
+
+        .env-paper-peek .peek-heart { font-size: 1.2rem; }
+        .env-paper-peek .peek-line {
+            width: 60%;
+            height: 2px;
+            background: #f0e0e4;
+            border-radius: 1px;
+        }
+
+        /* When flap is open, paper peeks up */
+        .envelope.flap-open .env-paper-peek {
+            transform: translateX(-50%) translateY(-40px);
+        }
+
+        /* ========== STANDALONE LETTER (centered, scrollable) ========== */
+        .letter-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .letter-overlay.show {
+            pointer-events: auto;
+            opacity: 1;
+        }
+
+        .letter-paper {
+            width: 370px;
+            max-width: 92vw;
+            max-height: 65vh;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.18);
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Scrollbar styling */
+        .letter-paper::-webkit-scrollbar { width: 6px; }
+        .letter-paper::-webkit-scrollbar-track { background: transparent; }
+        .letter-paper::-webkit-scrollbar-thumb {
+            background: #f48fb1;
+            border-radius: 3px;
+        }
+
+        .letter-inner {
+            padding: 35px 35px 30px 45px;
+            position: relative;
+        }
+
+        /* Red left border */
+        .letter-inner::before {
+            content: '';
+            position: absolute;
+            top: 20px; left: 18px;
+            bottom: 20px;
+            width: 3px;
+            background: #e91e63;
+            border-radius: 2px;
+        }
+
+        /* Horizontal lines */
+        .letter-inner::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent,
+                transparent 30px,
+                #f5e6ea 30px,
+                #f5e6ea 31px
+            );
+            opacity: 0.5;
+        }
+
+        .letter-title {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2rem;
+            color: #d63384;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .letter-subtitle {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.3rem;
+            color: #e91e63;
+            margin-bottom: 20px;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        .letter-body {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.88rem;
+            line-height: 1.9;
+            color: #555;
+            position: relative;
+            z-index: 1;
+        }
+
+        .letter-body p { margin-bottom: 12px; }
+
+        .letter-sign {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.2rem;
+            color: #d63384;
+            margin-top: 18px;
+            text-align: right;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Close button */
+        .close-btn {
+            margin-top: 18px;
+            background: linear-gradient(135deg, #d63384, #e91e63);
+            color: #fff;
+            border: none;
+            padding: 11px 38px;
+            font-size: 0.95rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(214, 51, 132, 0.4);
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .close-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(214, 51, 132, 0.5);
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 500px) {
+            .code-card { padding: 35px 30px; }
+            .code-card h1 { font-size: 1.8rem; }
+            .welcome-text { font-size: 2.2rem; }
+            .envelope {
+                width: 290px;
+                height: 200px;
+            }
+            .env-body {
+                width: 290px;
+                height: 180px;
+            }
+            .env-flap {
+                border-left: 145px solid transparent;
+                border-right: 145px solid transparent;
+                border-top: 100px solid #ffcdd2;
+            }
+            .env-paper-peek { width: 250px; height: 140px; }
+            .letter-paper { max-height: 60vh; }
+            .letter-inner { padding: 28px 28px 25px 38px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Floating Hearts Background -->
+    <div class="hearts-bg" id="heartsBg"></div>
+
+    <!-- ========== SCREEN 1: SECRET CODE ========== -->
+    <div id="screen1">
+        <div class="code-card">
+            <h1>Enter the secret code</h1>
+            <div class="input-wrapper">
+                <input type="password" id="codeInput" placeholder="••••••••" maxlength="10" autocomplete="off">
+            </div>
+            <button class="enter-btn" id="enterBtn">Enter</button>
+            <p class="error-msg" id="errorMsg">Wrong codetry again 💔</p>
+        </div>
+    </div>
+
+    <!-- ========== SCREEN 2: WELCOME ========== -->
+    <div id="screen2">
+        <div class="sparkle-container" id="sparkleContainer"></div>
+        <h1 class="welcome-text" id="welcomeText">Welcome my love noza💝</h1>
+    </div>
+
+    <!-- ========== SCREEN 3: LOVE LETTER ========== -->
+    <div id="screen3">
+        <div class="tab-header">
+            <button class="tab-btn">❤️ Love Letter</button>
+        </div>
+
+        <div class="envelope-wrapper">
+            <p class="click-hint" id="clickHint">✉️ Tap the envelope to open</p>
+
+            <div class="envelope" id="envelope">
+                <div class="env-flap"></div>
+                <div class="env-seal">💌</div>
+                <div class="env-paper-peek">
+                    <span class="peek-heart">💗</span>
+                    <div class="peek-line"></div>
+                    <div class="peek-line"></div>
+                    <div class="peek-line"></div>
+                    <div class="peek-line"></div>
+                </div>
+                <div class="env-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== LETTER OVERLAY (scrollable paper + close) ========== -->
+    <div class="letter-overlay" id="letterOverlay">
+        <div class="letter-paper" id="letterPaper">
+            <div class="letter-inner">
+                <div class="letter-title">My Dearest NOZA</div>
+                <div class="letter-subtitle">A Letter For You</div>
+                <div class="letter-body">
+                    <p>My love, NOZA</p>
+                    <p>Every second with you feels like a beautiful dream that I never want to wake up from your smile brightens my darkest days, and your laughter is my favorite melody.</p>
+                    <p>I cherish every moment we spend together from our silly inside jokes to our deep conversations under the stars you shwed me what true happiness feels like, and I'm so grateful to have you in my life.</p>
+                    <p>No matter where life takes us always remember that my heart belongs to you.</p>
+                    <p>ياحياتي و روحي و قلبي و كل اللي ليا بحبك اوي بحبك لدرجه انت عمرك ماتتخيليها و عمر ما حد يقدر يتخيلها</p>
+                    <p>حبي ليكي كبير اوي لدرجه الكلام نفسه مايوصفوش ولا له حدود و كل مدى بيكبر اكتر و اكتر </p>
+                    <p>انتي حياتي كلها و مش عارف اوصفلك قد ايه انت مهمه بالنسبالي و قد ايه انت مجرد مابفكر فيكي بضحك ازاي و ببقا مبسوط اوي</p>
+                    <p>ولا جمالك اللي مالوش وصف و حكاويكي اللي بتحكيهالي و حبك الكبير ليا ببقا قد ايه مبسوط بيه وفرحتك اللي دايما بفرح عشانها</p>
+                    <p>وربنا يديمك ليا نعمه و يخليكي ليا ياقلبي و يارب نفضل مع بعض لاخر العمر💗</p>
+                </div>
+                <div class="letter-sign">Forever yours,<br>Me 💕</div>
+            </div>
+        </div>
+        <button class="close-btn" id="closeBtn">Close ✕</button>
+    </div>
+
+    <script>
+        // ==================== FLOATING HEARTS ====================
+        (function createFloatingHearts() {
+            const container = document.getElementById('heartsBg');
+            const hearts = ['💕','💗','💖','💓','♥','❤️','💘'];
+            for (let i = 0; i < 20; i++) {
+                const h = document.createElement('span');
+                h.className = 'floating-heart';
+                h.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                h.style.left = Math.random() * 100 + '%';
+                h.style.fontSize = (12 + Math.random() * 18) + 'px';
+                h.style.animationDuration = (8 + Math.random() * 12) + 's';
+                h.style.animationDelay = Math.random() * 10 + 's';
+                container.appendChild(h);
+            }
+        })();
+
+        // ==================== SCREEN 1 ====================
+        const codeInput = document.getElementById('codeInput');
+        const enterBtn = document.getElementById('enterBtn');
+        const errorMsg = document.getElementById('errorMsg');
+        const screen1 = document.getElementById('screen1');
+        const screen2 = document.getElementById('screen2');
+        const screen3 = document.getElementById('screen3');
+        const welcomeText = document.getElementById('welcomeText');
+        const SECRET_CODE = '2812024';
+
+        function checkCode() {
+            if (codeInput.value.trim() === SECRET_CODE) {
+                screen1.classList.add('hide');
+                setTimeout(() => {
+                    screen1.style.display = 'none';
+                    screen2.classList.add('show');
+                    setTimeout(() => { welcomeText.classList.add('animate'); createSparkles(); }, 300);
+                    setTimeout(() => {
+                        screen2.classList.add('hide');
+                        setTimeout(() => { screen2.style.display = 'none'; screen3.classList.add('show'); }, 800);
+                    }, 3500);
+                }, 600);
+            } else {
+                errorMsg.classList.remove('show');
+                void errorMsg.offsetWidth;
+                errorMsg.classList.add('show');
+                codeInput.value = '';
+                codeInput.focus();
+            }
+        }
+
+        enterBtn.addEventListener('click', checkCode);
+        codeInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkCode(); });
+
+        // ==================== SPARKLES ====================
+        function createSparkles() {
+            const c = document.getElementById('sparkleContainer');
+            for (let i = 0; i < 30; i++) {
+                const s = document.createElement('div');
+                s.className = 'sparkle';
+                s.style.left = Math.random()*100+'%';
+                s.style.top = Math.random()*100+'%';
+                s.style.animationDelay = Math.random()*2+'s';
+                s.style.animationDuration = (1+Math.random()*2)+'s';
+                s.style.width = (4+Math.random()*6)+'px';
+                s.style.height = s.style.width;
+                c.appendChild(s);
+            }
+        }
+
+        // ==================== SCREEN 3: ENVELOPE LOGIC ====================
+        const envelope = document.getElementById('envelope');
+        const clickHint = document.getElementById('clickHint');
+        const letterOverlay = document.getElementById('letterOverlay');
+        const letterPaper = document.getElementById('letterPaper');
+        const closeBtn = document.getElementById('closeBtn');
+        let animating = false;
+
+        // OPEN: click closed envelope
+        envelope.addEventListener('click', () => {
+            if (animating) return;
+            if (envelope.classList.contains('flap-open')) return;  // already open
+            animating = true;
+            clickHint.classList.add('hidden');
+
+            // Step 1: open flap
+            envelope.classList.add('flap-open');
+
+            // Step 2: after flap opens, fade envelope away & show letter
+            setTimeout(() => {
+                envelope.classList.add('gone');
+
+                setTimeout(() => {
+                    // Show letter overlay
+                    letterPaper.scrollTop = 0;
+                    letterOverlay.classList.add('show');
+                    animating = false;
+                }, 500);
+            }, 700);
+        });
+
+        // CLOSE: click close button
+        closeBtn.addEventListener('click', () => {
+            if (animating) return;
+            animating = true;
+
+            // Step 1: hide the letter overlay
+            letterOverlay.classList.remove('show');
+
+            // Step 2: show the envelope with flap still open (paper "going back in")
+            setTimeout(() => {
+                envelope.classList.remove('gone');
+                // envelope still has flap-open, so it appears open
+
+                // Step 3: close the flap after a moment
+                setTimeout(() => {
+                    envelope.classList.remove('flap-open');
+                    clickHint.classList.remove('hidden');
+                    animating = false;
+                }, 600);
+            }, 500);
+        });
+
+        // Focus input on load
+        window.addEventListener('load', () => codeInput.focus());
+    </script>
+</body>
+</html>
